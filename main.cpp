@@ -1,6 +1,9 @@
 #include "tienda.h"
 
 #include <QApplication>
+#include <QTranslator>
+#include <QInputDialog>
+#include "tienda.h"
 
 int main(int argc, char *argv[])
 {

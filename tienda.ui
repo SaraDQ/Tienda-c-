@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>610</height>
+    <height>703</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,9 @@
    <string notr="true">background-color: rgb(0, 21, 36);
 color: rgb(255, 255, 255);
 font: 75 10pt &quot;MS Sans Serif&quot;;</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -39,6 +42,27 @@ font: 75 10pt &quot;MS Sans Serif&quot;;</string>
        </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QComboBox" name="inIdiomas">
+         <property name="font">
+          <font>
+           <family>MS Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>9</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+           <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="placeholderText">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="styleSheet">

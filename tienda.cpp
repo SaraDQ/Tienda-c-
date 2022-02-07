@@ -1,40 +1,139 @@
 /*
  * Programacion orientada a objetos
- * Programa de tienda y facturacion con GUI
+ * Programa de tienda,facturacion y traducciones con GUI
  * Autor: Sara Quiguango <squiguango@est.ups.edu.ec>
- * Fecha : 25/01/2022
+ * Fecha : 06/02/2022
  */
 #include "tienda.h"
 #include "ui_tienda.h"
-#include "ui_finalizacion.h"
+
+#include <QApplication>
+#include <QTranslator>
+#include <QLibraryInfo>
+#include <QDebug>
 
 using namespace std;
+
+//Declarando variabkes grobales
+int axulen=1;
+int idicon=0;
 
 Tienda::Tienda(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Tienda)
 {
     ui->setupUi(this);
+
     // Lista de productos
-    cargarProductos();
+    cargar();
     // Mostrar los productos en el combo
     foreach (Producto *p, m_productos){
         ui->inProducto->addItem(p->nombre());
     }
     // Configurar cabecera de la tabla
-    QStringList cabecera = {"Cantidad", "Producto", "P. unitario", "Subtotal"};
+    QStringList cabecera = {tr("Cantidad"),tr("Producto"),tr("P. unitario"), tr("Subtotal")};
     ui->outDetalle->setColumnCount(4);
     ui->outDetalle->setHorizontalHeaderLabels(cabecera);
     // Establecer el subtotal a 0
     m_subtotal = 0;
     //Establecer los detalles con string
     m_detalles ="";
+
+    //Establecer el idioma que va a contener el comboBox
+    ui->inIdiomas->addItems(QStringList()<<"Español"<<"Portugués"<<"Afrikáans");
+    //Conectar la señal del combo box
+    connect(ui->inIdiomas, static_cast<void(QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+            [=](const QString &str1){
+        //IDIOMAS
+        // Dependiendo del idioma seleccionado, carga el archivo de traducción
+        if(str1=="Portugués"){
+            axulen=3;
+            //Eliminando de la lista los productos para que no se repita
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            m_productos.clear();
+            //Cargando los productos
+            cargarProductos();
+            foreach (Producto *p, m_productos){
+                if(idicon==0){
+                    ui->inProducto->setItemText(idicon,p->nombre());
+                    idicon=1;
+                }
+                else{
+                    ui->inProducto->addItem(p->nombre());
+                }
+            }
+            idicon=0;
+            QStringList cabecera = {tr("Quantidade"),tr("Produtos"),tr("P unitário"), tr("Subtotal")};
+            ui->outDetalle->setColumnCount(4);
+            ui->outDetalle->setHorizontalHeaderLabels(cabecera);
+            //Cargando el idioma
+            m_traduccion.load(":/Tienda_tu.qm"+str1,".");
+        }
+        else if(str1=="Afrikáans"){
+            axulen=2;
+            //Eliminando de la lista los productos para que no se repita
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            m_productos.clear();
+            //Cargando los productos
+            cargarProductos();
+            foreach (Producto *p, m_productos){
+                if(idicon==0){
+                    ui->inProducto->setItemText(idicon,p->nombre());
+                    idicon=1;
+                }
+                else{
+                    ui->inProducto->addItem(p->nombre());
+                }
+
+            }
+            idicon=0;
+            QStringList cabecera = {tr("Hoeveelheid"),tr("Produk"),tr("Eenheid P"), tr("Subtotaal")};
+            ui->outDetalle->setColumnCount(4);
+            ui->outDetalle->setHorizontalHeaderLabels(cabecera);
+            //Cargando el idioma
+            m_traduccion.load(":/tienda_en.qm"+str1,".");
+        }
+        else if(str1=="Español"){
+            axulen=1;
+            //Eliminando de la lista los productos para que no se repita
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            ui->inProducto->removeItem(1);
+            m_productos.clear();
+            //Cargando los productos
+            cargarProductos();
+            foreach (Producto *p, m_productos){
+                if(idicon==0){
+                    ui->inProducto->setItemText(idicon,p->nombre());
+                    idicon=1;
+                }
+                else{
+                    ui->inProducto->addItem(p->nombre());
+                }
+            }
+            idicon=0;
+            QStringList cabecera = {"Cantidad","Producto","P. unitario", "Subtotal"};
+            ui->outDetalle->setColumnCount(4);
+            ui->outDetalle->setHorizontalHeaderLabels(cabecera);
+            //Cargando el idioma
+            m_traduccion.load("Tienda_es.ts"+str1,",");
+        }
+        // Si es diferente de español, se instala la traducción en TODA la aplicación
+        if(str1!="Español"){
+            qApp->installTranslator(&m_traduccion);
+        }
+    });
 }
 
 Tienda::~Tienda()
 {
     delete ui;
 }
+
 /**
  * @brief Tienda::borrar
  * @param a
@@ -55,14 +154,16 @@ bool Tienda::veriPhone(char c[]){
     if(limite == 10){
         ui->inTelefono->setStyleSheet("QLineEdit { background-color :green}");
         return true;
-
     }
     else{
         ui->inTelefono->setStyleSheet("QLineEdit { background-color :red}");
         return false;
     }
-
 }
+
+
+
+
 /**
  * @brief Tienda::extraer Aqui se hace la validacion de la cedula con sus respectivos colores
  * @param b
@@ -157,27 +258,53 @@ bool Tienda::extraer(char b[]){
 /**
  * @brief Tienda::cargarProductos Carga la lista de productos de la tienda
  */
-void Tienda::cargarProductos()
-{
-    // Crear productos "quemados" en el código
+
+
+void Tienda::cargar(){
+    //Productos de la tienda
     m_productos.append(new Producto(1, "Leche", 0.80));
     m_productos.append(new Producto(2, "Pan", 0.15));
     m_productos.append(new Producto(3, "Queso", 2.50));
-    // Podría leerse de una base de datos, de un archivo o incluso de Internet
 }
-
+void Tienda::cargarProductos()
+{
+    // Crear productos "quemados" en el código
+    //Estableciendo el idioma de los productos
+    // Podría leerse de una base de datos, de un archivo o incluso de Internet
+    if(axulen==1){
+        m_productos.append(new Producto(1, "Leche", 0.80));
+        m_productos.append(new Producto(2, "Pan", 0.15));
+        m_productos.append(new Producto(3, "Queso", 2.50));
+    }
+    else if(axulen==2){
+        m_productos.append(new Producto(1, "Melk", 0.80));
+        m_productos.append(new Producto(2, "Brood", 0.15));
+        m_productos.append(new Producto(3, "Kaas", 2.50));
+    }
+    else if(axulen==3){
+        m_productos.append(new Producto(1, "Leite", 0.80));
+        m_productos.append(new Producto(2, "Pão", 0.15));
+        m_productos.append(new Producto(3, "Queijo", 2.50));
+    }
+}
+/**
+ * @brief Tienda::calcular
+ * @param stProducto  : Esta funcion calcula los totales de la compra
+ */
 void Tienda::calcular(float stProducto)
 {
     // Calcular valores
     m_subtotal += stProducto;
-     iva = m_subtotal * IVA / 100;
-     total = m_subtotal + iva;
+    iva = m_subtotal * IVA / 100;
+    total = m_subtotal + iva;
     // Mostrar valores en GUI
     ui->outSubtotal->setText("$ " + QString::number(m_subtotal, 'f', 2));
     ui->outIva->setText("$ " + QString::number(iva, 'f', 2));
     ui->outTotal->setText("$ " + QString::number(total, 'f', 2));
 }
-//Limpiar la informacion ingresada
+/**
+ * @brief Tienda::limpiar : Limpia la informacion ingresada
+ */
 void Tienda::limpiar()
 {
     //Inicializar las variables en cero
@@ -194,9 +321,9 @@ void Tienda::limpiar()
     ui->inCantidad->setValue(0);
     ui->inCedula->setText("");
 
-    ui->outIva->setText("");
-    ui->outSubtotal->setText("");
-    ui->outTotal->setText("");
+    ui->outIva->setText("0.0");
+    ui->outSubtotal->setText("0.0");
+    ui->outTotal->setText("0.0");
 
     ui->inTelefono->setStyleSheet("QLineEdit { background-color :white; font: 10pt Consolas; color: rgb(0, 0, 0);}");
     ui->inCedula->setStyleSheet("QLineEdit { background-color :white; font: 10pt Consolas; color: rgb(0, 0, 0);}");
@@ -232,13 +359,13 @@ void Tienda::on_btnAgregar_released()
     char phone[100];
     strcpy(phone,tel.c_str());
     // Validar que no se agregen productos con 0 cantidad
-     cantidad = ui->inCantidad->value();
+    cantidad = ui->inCantidad->value();
     if (cantidad == 0){
         return;
     }
     //Validar que los datos del cliente esten completos
     if(nombreC == "" || cedula == ""||telefono ==""||email==""||direccion==""){
-        QMessageBox::warning(this,"Advertencia","Ingrese todos los datos del cliente porfavor.");
+        QMessageBox::warning(this,tr("Advertencia"),tr("Ingrese todos los datos del cliente porfavor."));
         return;
     }
     borrar(buffer);
@@ -248,6 +375,7 @@ void Tienda::on_btnAgregar_released()
     if( aux && aux2){
         // Obtener los datos de la GUI
         int i = ui->inProducto->currentIndex();
+
         Producto *p = m_productos.at(i);
 
         // Calcular el subrotal del producto
@@ -296,7 +424,7 @@ void Tienda::on_btnFinalizar_clicked()
 
     //Validacion para que ingrese datos a la compra del cliente
     if(nombreC == "" || cedula == ""||telefono ==""||email==""||direccion==""){
-        QMessageBox::warning(this,"Advertencia","Aun no ingresa datos de la compra.");
+        QMessageBox::warning(this,tr("Advertencia"),tr("Aun no ingresa datos de la compra."));
         return;
     }
     //Enviar datos a la nueva ventana
@@ -305,8 +433,18 @@ void Tienda::on_btnFinalizar_clicked()
 
 }
 
-void Tienda::on_limpiar_clicked()
-{
-    limpiar();
+void Tienda::on_limpiar_clicked(){limpiar();}
+/**
+ * @brief Tienda::changeEvent
+ * @param event : Esta funcion corresponde a las traducciones
+ */
+void Tienda::changeEvent(QEvent *event){
+    if(event->type()==QEvent::LanguageChange){
+        ui->retranslateUi(this);
+    }
+
 }
+
+
+
 

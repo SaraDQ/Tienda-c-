@@ -16,7 +16,12 @@ class Finalizacion : public QDialog
     Q_OBJECT
 
 public:
-    explicit Finalizacion(QString nombreC,QString cedula,QString telefono,QString email,QString iva,QString total,QString subtotal,QString direccion,QString detalles,QWidget *parent = nullptr);
+    explicit Finalizacion(QString nombreC,
+                          QString cedula,QString telefono,
+                          QString email,QString iva,
+                          QString total,QString subtotal,
+                          QString direccion,QString detalles,
+                          QWidget *parent = nullptr);
     ~Finalizacion();
     Ui::Finalizacion *ui;
     void guardar();
@@ -24,8 +29,6 @@ public:
 
 public slots:
     void on_imprimir_clicked();
-
-private:
 
 };
 

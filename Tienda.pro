@@ -22,7 +22,9 @@ HEADERS += \
 FORMS += \
     finalizacion.ui \
     tienda.ui
-
+TRANSLATIONS = tienda_en.ts \
+                         Tienda_tu.ts\
+                         Tienda_es.ts
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -30,3 +32,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Iconos.qrc
+
+DISTFILES += \
+    Tienda_es.ts \
+    tienda_en.ts
