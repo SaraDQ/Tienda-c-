@@ -12,6 +12,7 @@ private:
     float m_precio;
 
 public:
+    //funciones
     explicit Producto(QObject *parent = nullptr);
     Producto(int codigo, const QString &nombre, float precio, QObject *parent = nullptr);
 
